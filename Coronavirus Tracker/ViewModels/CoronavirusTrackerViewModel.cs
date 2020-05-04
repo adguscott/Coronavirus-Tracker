@@ -108,8 +108,6 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
-
-
         private int _worldCases;
 
         public int WorldCases
@@ -150,12 +148,20 @@ namespace Coronavirus_Tracker.ViewModels
             await Task.Run(() =>
             {
                 {
-                    Data = new CoronavirusDataViewModel();
+                    try
+                    {
+                        Data = new CoronavirusDataViewModel();
+                        SetWorldStats();
+                        CountryNames = Data.GetCountryNames();
+                        Enabled = true;
+                    }
+                    catch (Exception)
+                    {
+                        MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
+                    }
+
                 }
             });
-            SetWorldStats();
-            CountryNames = Data.GetCountryNames();
-            Enabled = true;
         }
 
         public void SetWorldStats()
@@ -182,6 +188,7 @@ namespace Coronavirus_Tracker.ViewModels
 
         public async Task Refresh()
         {
+            if (Data == null) await GetData();
             for(int i = 0; i < TrackedCountries.Count; i++)
             {
                 var name = TrackedCountries[i].Name;
@@ -208,7 +215,15 @@ namespace Coronavirus_Tracker.ViewModels
 
         public void SetLastUpdated()
         {
-            LastUpdated = DateTime.Now.ToString();
+            if (Data != null)
+            {
+                LastUpdated = DateTime.Now.ToString();
+            }
+            else
+            {
+                LastUpdated = "";
+            }
+            
         }
     }
 }
