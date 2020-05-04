@@ -34,5 +34,17 @@ namespace Coronavirus_Tracker.Properties {
                 this["SQLiteConnectionString"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastUpdated {
+            get {
+                return ((string)(this["LastUpdated"]));
+            }
+            set {
+                this["LastUpdated"] = value;
+            }
+        }
     }
 }

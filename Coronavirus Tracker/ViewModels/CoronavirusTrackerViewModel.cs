@@ -218,10 +218,12 @@ namespace Coronavirus_Tracker.ViewModels
             if (Data != null)
             {
                 LastUpdated = DateTime.Now.ToString();
+                Properties.Settings.Default.LastUpdated = DateTime.Now.ToString();
+                Properties.Settings.Default.Save();
             }
             else
             {
-                LastUpdated = "";
+                LastUpdated = Properties.Settings.Default.LastUpdated;
             }
             
         }
