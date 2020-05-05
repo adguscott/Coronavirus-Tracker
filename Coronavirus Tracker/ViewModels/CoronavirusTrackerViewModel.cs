@@ -137,7 +137,7 @@ namespace Coronavirus_Tracker.ViewModels
         {
             TrackedCountries = new ObservableCollection<DisplayCountry>();
             DatabaseManager = new SQLiteDatabaseManager();
-            TrackedCountries = DatabaseManager.Read();
+            TrackedCountries = new ObservableCollection<DisplayCountry>(DatabaseManager.Read());
             CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
             CountryView.SortDescriptions.Add(new SortDescription("Cases", ListSortDirection.Descending));
             Enabled = false;
@@ -181,7 +181,7 @@ namespace Coronavirus_Tracker.ViewModels
                 {
                     var stat = await Data.GetCountryStats(countryName);
                     TrackedCountries.Add(stat);
-                    DatabaseManager.Create(stat);
+                    await DatabaseManager.Create(stat);
                 }
             }
         }

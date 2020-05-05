@@ -22,17 +22,33 @@ namespace Coronavirus_Tracker.ViewModels
 
 		public async Task<DisplayCountry> GetCountryStats(string countryName)
 		{
-			var country = Task.Run(() =>
-			{
-				return new DisplayCountry()
-				{
-					Name = countryName,
-					Cases = Convert.ToInt32(FromCountryNameConfirmed(countryName)),
-					Deaths = Convert.ToInt32(FromCountryNameDeaths(countryName))
-				};
-			});
+			var cases = GetConfirmed(countryName);
+			var deaths = GetDeaths(countryName);
 
-			return await country;
+			return new DisplayCountry()
+			{
+				Name = countryName,
+				Cases = await cases,
+				Deaths = await deaths,
+			};
+		}
+
+		private async Task<int> GetConfirmed(string countryName)
+		{
+			var confirmedTask = Task<string>.Run(() => FromCountryNameConfirmed(countryName));
+
+			var confirmed = await confirmedTask;
+
+			return Convert.ToInt32(confirmed);
+		}
+
+		private async Task<int> GetDeaths(string countryName)
+		{
+			var deathsTask = Task<string>.Run(() => FromCountryNameDeaths(countryName));
+
+			var deaths = await deathsTask;
+
+			return Convert.ToInt32(deaths);
 		}
 
 

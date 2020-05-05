@@ -10,9 +10,11 @@ namespace Coronavirus_Tracker.Data
 {
     interface IDatabaseManager
     {
-        void Create(DisplayCountry country);
+        void CreateDatabase();
 
-        ObservableCollection<DisplayCountry> Read();
+        Task Create(DisplayCountry country);
+
+        IEnumerable<DisplayCountry> Read();
 
         Task Update(DisplayCountry country);
 

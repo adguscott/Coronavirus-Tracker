@@ -101,9 +101,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\SQLiteDatabaseManager.cs" />
-    <Compile Include="Models\IDatabaseManager.cs" />
+    <Compile Include="Services\SQLiteDatabaseManager.cs" />
+    <Compile Include="Services\IDatabaseManager.cs" />
     <Compile Include="Models\DisplayCountry.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="ViewModels\CoronavirusDataViewModel.cs" />
     <Compile Include="ViewModels\CoronavirusTrackerViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
@@ -137,9 +138,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Countries.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
