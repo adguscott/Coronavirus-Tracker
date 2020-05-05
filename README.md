@@ -1,2 +1,6 @@
 # Coronavirus-Tracker
-Coronavirus-Tracker is a simple program that allows you to track Coronavirus statistics of the world, and chosen countries.
+This is a simple program designed to track Coronavirus statistics around the world.  
+_Technologies used: C#, WPF, MVVM, [CovidSharp](https://github.com/Abdirahiim/covidtrackerapiwrapper), SQLite._
+
+![](https://i.imgur.com/qHyNIHg.png)
+
