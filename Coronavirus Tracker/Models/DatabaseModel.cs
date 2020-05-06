@@ -22,7 +22,7 @@ namespace Coronavirus_Tracker.Data
 
         public DatabaseModel()
         {
-            ConnectionString = Properties.Settings.Default.SQLiteConnectionString;//
+            ConnectionString = Properties.Settings.Default.SQLiteConnectionString;
             if(!File.Exists("Countries.sqlite"))
             {
                 Task.Run(() => CreateDatabase());
