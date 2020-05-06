@@ -23,15 +23,13 @@ namespace Coronavirus_Tracker.Properties {
             }
         }
         
-        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=./Data/Countries.sqlite;Version=3;")]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=Countries.sqlite;Version=3;")]
         public string SQLiteConnectionString {
             get {
                 return ((string)(this["SQLiteConnectionString"]));
-            }
-            set {
-                this["SQLiteConnectionString"] = value;
             }
         }
         

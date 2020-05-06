@@ -30,7 +30,7 @@ namespace Coronavirus_Tracker.Views
 
         private async void Window_ContentRendered(object sender, EventArgs e)
         {
-            await ViewModel.GetData();
+            await ViewModel.PopulateView();
         }
 
         private void Track_Click(object sender, RoutedEventArgs e)

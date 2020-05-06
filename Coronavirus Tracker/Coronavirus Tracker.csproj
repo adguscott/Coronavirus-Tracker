@@ -101,11 +101,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\DatabaseModel.cs" />
+    <Compile Include="Models\IDatabaseModel.cs" />
+    <Compile Include="Models\Country.cs" />
     <Compile Include="Services\SQLiteDatabaseManager.cs" />
-    <Compile Include="Services\IDatabaseManager.cs" />
-    <Compile Include="Models\DisplayCountry.cs" />
     <Compile Include="Settings.cs" />
-    <Compile Include="ViewModels\CoronavirusDataViewModel.cs" />
+    <Compile Include="Models\CoronavirusDataModel.cs" />
     <Compile Include="ViewModels\CoronavirusTrackerViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\MainView.xaml.cs">

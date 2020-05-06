@@ -13,19 +13,19 @@ using System.Web.UI;
 
 namespace Coronavirus_Tracker.ViewModels 
 {
-	class CoronavirusDataViewModel : CoronavirusData
+	class CoronavirusDataModel : CoronavirusData
 	{
 		public List<string> GetCountryNames()
 		{
 			return GetCountryList().Split('\n').ToList<string>();
 		}
 
-		public async Task<DisplayCountry> GetCountryStats(string countryName)
+		public async Task<Country> GetCountryStats(string countryName)
 		{
 			var cases = GetConfirmed(countryName);
 			var deaths = GetDeaths(countryName);
 
-			return new DisplayCountry()
+			return new Country()
 			{
 				Name = countryName,
 				Cases = await cases,
@@ -35,20 +35,16 @@ namespace Coronavirus_Tracker.ViewModels
 
 		private async Task<int> GetConfirmed(string countryName)
 		{
-			var confirmedTask = Task<string>.Run(() => FromCountryNameConfirmed(countryName));
+			var confirmed = Task.Run(() => FromCountryNameConfirmed(countryName));
 
-			var confirmed = await confirmedTask;
-
-			return Convert.ToInt32(confirmed);
+			return Convert.ToInt32(await confirmed);
 		}
 
 		private async Task<int> GetDeaths(string countryName)
 		{
-			var deathsTask = Task<string>.Run(() => FromCountryNameDeaths(countryName));
+			var deaths = Task.Run(() => FromCountryNameDeaths(countryName));
 
-			var deaths = await deathsTask;
-
-			return Convert.ToInt32(deaths);
+			return Convert.ToInt32(await deaths);
 		}
 
 

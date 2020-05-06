@@ -20,9 +20,9 @@ namespace Coronavirus_Tracker.ViewModels
 {
     class CoronavirusTrackerViewModel : ViewModel
     {
-        private IDatabaseManager DatabaseManager;
+        private IDatabaseModel DatabaseManager;
 
-        private CoronavirusDataViewModel Data;
+        private CoronavirusDataModel Data;
 
         private bool _enabled;
 
@@ -60,9 +60,9 @@ namespace Coronavirus_Tracker.ViewModels
                 }
         }
 
-        private ObservableCollection<DisplayCountry> _trackedCountries;
+        private ObservableCollection<Country> _trackedCountries;
 
-        public ObservableCollection<DisplayCountry> TrackedCountries
+        public ObservableCollection<Country> TrackedCountries
         {
             get => _trackedCountries;
             
@@ -73,9 +73,9 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
-        private DisplayCountry _selectedCountry;
+        private Country _selectedCountry;
 
-        public DisplayCountry SelectedCountry
+        public Country SelectedCountry
         {
             get => _selectedCountry;
             set
@@ -135,33 +135,42 @@ namespace Coronavirus_Tracker.ViewModels
 
         public CoronavirusTrackerViewModel()
         {
-            TrackedCountries = new ObservableCollection<DisplayCountry>();
-            DatabaseManager = new SQLiteDatabaseManager();
-            TrackedCountries = new ObservableCollection<DisplayCountry>(DatabaseManager.Read());
-            CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
-            CountryView.SortDescriptions.Add(new SortDescription("Cases", ListSortDirection.Descending));
+            TrackedCountries = new ObservableCollection<Country>();
+            DatabaseManager = new DatabaseModel();
             Enabled = false;
         }
 
         public async Task GetData()
         {
-            await Task.Run(() =>
+            try
             {
-                {
-                    try
-                    {
-                        Data = new CoronavirusDataViewModel();
-                        SetWorldStats();
-                        CountryNames = Data.GetCountryNames();
-                        Enabled = true;
-                    }
-                    catch (Exception)
-                    {
-                        MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
-                    }
+               await Task.Run(() => Data = new CoronavirusDataModel());
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
+            }
+        }
 
-                }
-            });
+        public async Task PopulateView()
+        {
+            foreach(var country in await DatabaseManager.Read())
+            {
+                TrackedCountries.Add(country);
+            }
+            //TrackedCountries = new ObservableCollection<DisplayCountry>(await DatabaseManager.Read());
+            CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
+            CountryView.SortDescriptions.Add(new SortDescription("Cases", ListSortDirection.Descending));
+
+            await GetData();
+
+            if (Data.response.IsSuccessful)
+            {
+                SetWorldStats();
+                CountryNames = Data.GetCountryNames();
+                Enabled = true;
+            }
+                    
         }
 
         public void SetWorldStats()
@@ -188,7 +197,7 @@ namespace Coronavirus_Tracker.ViewModels
 
         public async Task Refresh()
         {
-            if (Data == null) await GetData();
+            if (Data == null) await PopulateView();
             for(int i = 0; i < TrackedCountries.Count; i++)
             {
                 var name = TrackedCountries[i].Name;

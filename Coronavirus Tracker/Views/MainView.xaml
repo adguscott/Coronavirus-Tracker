@@ -42,7 +42,7 @@
                 </Grid>
             </Border>
             
-            <DataGrid Name="dgCountries" ColumnWidth="*" Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" ItemsSource="{Binding Path=CountryView}" Template="{DynamicResource DataGridControlTemplate}" SelectedItem="{Binding SelectedCountry}">
+            <DataGrid Name="dgCountries" ColumnWidth="*" Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" ItemsSource="{Binding Path=TrackedCountries}" Template="{DynamicResource DataGridControlTemplate}" SelectedItem="{Binding SelectedCountry}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Country" Binding="{Binding Path=Name}"/>
                     <DataGridTextColumn Header="Cases" Binding="{Binding Path=Cases}" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Coronavirus_Tracker.Models
 {
-    class DisplayCountry
+    class Country
     {
         public string Name { get; set; }
         public int Cases { get; set; }
