@@ -20,6 +20,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="20"/>
             </Grid.RowDefinitions>
 
@@ -30,7 +31,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <ComboBox Name="cbCountries" SelectedItem="{Binding SelectedCountryName}" ItemsSource="{Binding CountryNames}" VerticalAlignment="Center" Background="White" FontSize="12" Height="25" Width="200" IsEditable="True" IsTextSearchEnabled="True"></ComboBox>
+                        <ComboBox Name="cbCountries" SelectedItem="{Binding SelectedCountryName}" DisplayMemberPath="Name"  ItemsSource="{Binding CountryNames}" VerticalAlignment="Center" Background="White" FontSize="12" Height="25" Width="200" IsEditable="True" IsTextSearchEnabled="True"></ComboBox>
                         <Button Template="{DynamicResource ButtonBaseControlTemplate}" Width="100" Height="25" Click="Track_Click">Track</Button>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1" Orientation="Horizontal">
@@ -41,12 +42,14 @@
                     </StackPanel>
                 </Grid>
             </Border>
-            
+
             <DataGrid Name="dgCountries" ColumnWidth="*" Grid.Row="2" Grid.Column="1" AutoGenerateColumns="False" ItemsSource="{Binding Path=TrackedCountries}" Template="{DynamicResource DataGridControlTemplate}" SelectedItem="{Binding SelectedCountry}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Country" Binding="{Binding Path=Name}"/>
-                    <DataGridTextColumn Header="Cases" Binding="{Binding Path=Cases}" />
-                    <DataGridTextColumn Header="Deaths" Binding="{Binding Path=Deaths}"/>
+                    <DataGridTextColumn Header="Cases" Binding="{Binding Path=Cases, StringFormat={}{0:n0}}" />
+                    <DataGridTextColumn Header="Deaths" Binding="{Binding Path=Deaths, StringFormat={}{0:n0}}"/>
+                    <DataGridTextColumn Header="CFR %" Binding="{Binding Path=CFR}"/>
+                    <DataGridTextColumn Header="Population" Binding="{Binding Path=Population, StringFormat={}{0:n0}}"/>
                 </DataGrid.Columns>
             </DataGrid>
             <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">

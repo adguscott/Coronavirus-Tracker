@@ -33,8 +33,9 @@ namespace Coronavirus_Tracker.Data
         {
             SQLiteConnection.CreateFile("Countries.sqlite");
             var sqlcommand = "create table 'Countries' (" +
-                            "'Id' integer not null primary key autoincrement unique, " +
+                            "'Id' integer not null primary key unique, " +
                             "'Name' text unique, " +
+                            "'Population' integer, " +
                             "'Cases' integer, " +
                             "'Deaths' integer)";
             await SQLiteDatabaseManager.NonQuery(sqlcommand, ConnectionString);
@@ -43,7 +44,7 @@ namespace Coronavirus_Tracker.Data
 
         public async Task Create(Country country)
         {
-            var sqlCommand = $"insert into Countries (Name, Cases, Deaths) values ('{country.Name}', {country.Cases}, {country.Deaths})";
+            var sqlCommand = $"insert into Countries (Id, Name, Population, Cases, Deaths) values ({country.Id}, '{country.Name}', {country.Population}, {country.Cases}, {country.Deaths})";
             await SQLiteDatabaseManager.NonQuery(sqlCommand, ConnectionString);
         }
 
@@ -54,33 +55,13 @@ namespace Coronavirus_Tracker.Data
             var table = await SQLiteDatabaseManager.Query(sqlCommand, ConnectionString);
             foreach(DataRow row in table.Rows)
             {
-                trackedCountries.Add(new Country()
-                {
-                    Name = row["Name"].ToString(),
-                    Cases = Convert.ToInt32(row["Cases"]),
-                    Deaths = Convert.ToInt32(row["Deaths"])
-                });
+                var id = Convert.ToInt32(row["Id"]);
+                var name = row["Name"].ToString();
+                var pop = Convert.ToInt64(row["Population"]);
+                var cases = Convert.ToInt32(row["Cases"]);
+                var deaths = Convert.ToInt32(row["Deaths"]);
+                trackedCountries.Add(new Country(id, name, pop, cases, deaths));
             }
-
-            /*            using (var connection = new SQLiteConnection(ConnectionString))
-                        {
-                            var command = new SQLiteCommand
-                                (
-                                    "select * from Countries", connection
-                                );
-
-                            connection.Open();
-                            var reader = command.ExecuteReader();
-                            while (reader.Read())
-                            {
-                                trackedCountries.Add
-                                    (
-                                        new DisplayCountry() { Name = reader["Name"].ToString(),
-                                        Cases = Convert.ToInt32(reader["Cases"]),
-                                        Deaths = Convert.ToInt32(reader["Deaths"])}
-                                    );                            
-                            }
-                        }*/
 
             return trackedCountries;
         }
@@ -93,7 +74,7 @@ namespace Coronavirus_Tracker.Data
 
         public async Task Delete(Country country)
         {
-            var sqlcommand = $"delete from Countries where Name = '{country.Name}'";
+            var sqlcommand = $"delete from Countries where Id = {country.Id}";
             await SQLiteDatabaseManager.NonQuery(sqlcommand, ConnectionString);
         }
 

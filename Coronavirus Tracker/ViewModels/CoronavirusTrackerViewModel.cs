@@ -1,6 +1,6 @@
 ﻿using Coronavirus_Tracker.Data;
 using Coronavirus_Tracker.Models;
-using CovidSharp;
+using Coronavirus_Tracker.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -29,8 +29,8 @@ namespace Coronavirus_Tracker.ViewModels
         public bool Enabled
         {
             get => _enabled;
-            set 
-            { 
+            set
+            {
                 _enabled = value;
                 OnPropertyChanged("Enabled");
             }
@@ -52,8 +52,8 @@ namespace Coronavirus_Tracker.ViewModels
 
         public ICollectionView CountryView
         {
-            get => _countryView; 
-            set 
+            get => _countryView;
+            set
                 {
                     _countryView = value;
                     OnPropertyChanged("CountryView");
@@ -65,7 +65,7 @@ namespace Coronavirus_Tracker.ViewModels
         public ObservableCollection<Country> TrackedCountries
         {
             get => _trackedCountries;
-            
+
             set
             {
                 _trackedCountries = value;
@@ -85,20 +85,20 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
-        private List<string> _countryNames;
+        private List<ComboboxCountryModel> _countryNames;
 
-        public List<string> CountryNames
+        public List<ComboboxCountryModel> CountryNames
         {
             get { return _countryNames; }
-            set { 
+            set {
                     _countryNames = value;
                     OnPropertyChanged("CountryNames");
                 }
         }
 
-        private string _selectedCountryName;
+        private ComboboxCountryModel _selectedCountryName;
 
-        public string SelectedCountryName
+        public ComboboxCountryModel SelectedCountryName
         {
             get => _selectedCountryName;
             set
@@ -108,25 +108,25 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
-        private int _worldCases;
+        private long _worldCases;
 
-        public int WorldCases
+        public long WorldCases
         {
             get => _worldCases;
             set
-            { 
+            {
                 _worldCases = value;
                 OnPropertyChanged("WorldCases");
             }
         }
 
-        private int _worldDeaths;
+        private long _worldDeaths;
 
-        public int WorldDeaths
+        public long WorldDeaths
         {
             get => _worldDeaths;
             set
-            { 
+            {
                 _worldDeaths = value;
                 OnPropertyChanged("WorldDeaths");
             }
@@ -137,19 +137,13 @@ namespace Coronavirus_Tracker.ViewModels
         {
             TrackedCountries = new ObservableCollection<Country>();
             DatabaseManager = new DatabaseModel();
+            Data = new CoronavirusDataModel();
             Enabled = false;
         }
 
         public async Task GetData()
         {
-            try
-            {
-               await Task.Run(() => Data = new CoronavirusDataModel());
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
-            }
+               await Task.Run(() => Data.GetApiModel());
         }
 
         public async Task PopulateView()
@@ -158,25 +152,27 @@ namespace Coronavirus_Tracker.ViewModels
             {
                 TrackedCountries.Add(country);
             }
-            //TrackedCountries = new ObservableCollection<DisplayCountry>(await DatabaseManager.Read());
             CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
             CountryView.SortDescriptions.Add(new SortDescription("Cases", ListSortDirection.Descending));
 
             await GetData();
 
-            if (Data.response.IsSuccessful)
+            if (Data.IsSuccessful)
             {
                 SetWorldStats();
                 CountryNames = Data.GetCountryNames();
                 Enabled = true;
             }
-                    
+            else
+            {
+                MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
+            }
         }
 
         public void SetWorldStats()
         {
-            WorldCases = Convert.ToInt32(Data.LatestConfirmed());
-            WorldDeaths = Convert.ToInt32(Data.LatestDeaths());
+            WorldCases = Data.WorldCases();
+            WorldDeaths = Data.WorldDeaths();
         }
 
         public async void TrackCountry()
@@ -188,7 +184,7 @@ namespace Coronavirus_Tracker.ViewModels
                 var alreadyTracked = TrackedCountries.Where(c => c.Name.Equals(countryName));
                 if (!alreadyTracked.Any())
                 {
-                    var stat = await Data.GetCountryStats(countryName);
+                    var stat = await Data.GetCountryStats(countryName.Id);
                     TrackedCountries.Add(stat);
                     await DatabaseManager.Create(stat);
                 }
@@ -197,11 +193,11 @@ namespace Coronavirus_Tracker.ViewModels
 
         public async Task Refresh()
         {
-            if (Data == null) await PopulateView();
-            for(int i = 0; i < TrackedCountries.Count; i++)
+            if (!Data.IsSuccessful) await PopulateView();
+            for (int i = 0; i < TrackedCountries.Count; i++)
             {
-                var name = TrackedCountries[i].Name;
-                TrackedCountries[i] = await Data.GetCountryStats(name);
+                var id = TrackedCountries[i].Id;
+                TrackedCountries[i] = await Data.GetCountryStats(id);
                 await DatabaseManager.Update(TrackedCountries[i]);
             }
             SetLastUpdated();
@@ -234,7 +230,7 @@ namespace Coronavirus_Tracker.ViewModels
             {
                 LastUpdated = Properties.Settings.Default.LastUpdated;
             }
-            
+
         }
     }
 }
