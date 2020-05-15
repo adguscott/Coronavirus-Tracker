@@ -52,5 +52,16 @@ namespace Coronavirus_Tracker.Views
         {
             await ViewModel.Refresh();
         }
+
+
+        private void Untrack(object sender, MouseButtonEventArgs e)
+        {
+            ViewModel.RemoveTrackedCountry();
+        }
+
+        private async void SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            await ViewModel.SelectionChanged();
+        }
     }
 }

@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="Coronavirus_Tracker.Views.DetailedView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Coronavirus_Tracker.Views"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="250" Background="White">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Label Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" FontSize="20" Content="{Binding Name}"/>
+        <Image Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Source="{Binding FlagUri}" Stretch="None"  Width="250" HorizontalAlignment="Left"/>
+        <Label Grid.Column="0" Grid.Row="2" FontSize="14" >Population:</Label>
+        <Label Grid.Column="1" Grid.Row="2" FontSize="14" Foreground="Green" Content="{Binding Population}"/>
+        <Label Grid.Column="0" Grid.Row="3" FontSize="14" >%Infected:</Label>
+        <Label Grid.Column="1" Grid.Row="3" FontSize="14" Foreground="Blue" Content="{Binding Infected}"/>
+        <Label Grid.Column="0" Grid.Row="4" FontSize="14" >Latest Cases:</Label>
+        <Label Grid.Column="1" Grid.Row="4" FontSize="14" Foreground="Red"  Content="{Binding LatestCases}"/>
+
+        <Label Grid.Column="0" Grid.Row="5" FontSize="14" >Latest Deaths:</Label>
+        <Label Grid.Column="1" Grid.Row="5" FontSize="14" Foreground="Red" Content="{Binding LatestDeaths}"/>
+        <Label Grid.Column="0" Grid.Row="6" FontSize="14" >Cases:</Label>
+        <Label Grid.Column="1" Grid.Row="6" FontSize="14" Foreground="Red"  Content="{Binding Cases}"/>
+
+        <Label Grid.Column="0" Grid.Row="7" FontSize="14" >Deaths:</Label>
+        <Label Grid.Column="1" Grid.Row="7" FontSize="14" Foreground="Red" Content="{Binding Deaths}"/>
+
+        <!-- Row 7 -->
+        <Label Grid.Column="0" Grid.Row="8" FontSize="14" ToolTip="Case Fatality Rate">CFR:</Label>
+        <Label Grid.Column="1" Grid.Row="8" FontSize="14" Foreground="Blue" Content="{Binding CFR}"/>
+
+        <!-- Row 8 -->
+        <Label Grid.Column="0" Grid.Row="9" FontSize="14" >Last Updated:</Label>
+        <TextBlock Grid.Column="1" Grid.Row="9" FontSize="14" VerticalAlignment="Center" Text="{Binding LastUpdated, StringFormat=dd/MM/yyyy}"/>
+    </Grid>
+</UserControl>
