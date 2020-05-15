@@ -12,13 +12,13 @@ namespace Coronavirus_Tracker.Data
     {
         Task CreateDatabase();
 
-        Task Create(Country country);
+        Task Create(DetailedCountryModel country);
 
-        Task<List<Country>> Read();
+        Task<List<DetailedCountryModel>> Read();
 
-        Task Update(Country country);
+        Task Update(DetailedCountryModel country);
 
-        Task Delete(Country country);
+        Task Delete(DetailedCountryModel country);
 
         Task DeleteAll();
 

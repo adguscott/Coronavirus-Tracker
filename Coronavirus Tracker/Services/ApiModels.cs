@@ -11,23 +11,25 @@ namespace Coronavirus_Tracker.Services
         public class CoronavirusTrackerApiModel
         {
             public StatsModel Latest { get; set; }
-            public List<LocationModel> Locations { get; set; }
+            public List<BasicLocationModel> Locations { get; set; }
         }
 
         public class CountryOverviewModel
         {
             public SingleLocationModel Location;
         }
-        public class LocationModel
+        public class BasicLocationModel
         {
             public int Id { get; set; }
             public string Country { get; set; }
-            public string Country_Code { get; set; }
-            public Nullable<long> Country_Population { get; set; }
-            public DateTime Last_Updated { get; set; }
             public string Province { get; set; }
-            public string County { get; set; }
+
+        }
+
+        public class Australia
+        {
             public StatsModel Latest;
+            public List<SingleLocationModel> Locations;
         }
 
         public class SingleLocationModel
@@ -35,10 +37,10 @@ namespace Coronavirus_Tracker.Services
             public int Id { get; set; }
             public string Country { get; set; }
             public string Country_Code { get; set; }
+            public string Province { get; set; }
             public long Country_Population { get; set; }
             public DateTime Last_Updated { get; set; }
 
-            public string County { get; set; }
             public StatsModel Latest;
             public TimelineOuterModel Timelines;
         }

@@ -7,6 +7,8 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
+using System.Windows.Media.Animation;
 using System.Windows.Navigation;
 using static Coronavirus_Tracker.Services.ApiModels;
 
@@ -43,29 +45,46 @@ namespace Coronavirus_Tracker.Models
         {
             CountryOverview = await ApiHelper.Read<CountryOverviewModel>($"v2/locations/{id}?source=jhu&timelines=true");
         }
-        public List<ComboboxCountryModel> GetCountryNames()
+        public List<CountryModel> GetCountryNames()
         {
             var countries = ApiModel.Locations.Where(c => c.Province.Equals("")).Select(c => c);
-            var result = new List<ComboboxCountryModel>();
-            foreach (LocationModel country in countries)
+            var result = new List<CountryModel>();
+            foreach (BasicLocationModel country in countries)
             {
-                result.Add(new ComboboxCountryModel() { Id = country.Id, Name = country.Country });
+                result.Add(new CountryModel() { Id = country.Id, Name = country.Country });
             }
+            //result.Add(GetAustraliaName());
             result = result.OrderBy(c => c.Name).ToList();
 
             return result;
 
         }
 
-        public async Task<Country> GetCountryStats(int countryId)
+        public async Task GetTimelines(DetailedCountryModel country)
+        {
+            var id = country.Id;
+            var countryApiData = await ApiHelper.Read<CountryOverviewModel>($"v2/locations/{id}?source=jhu&timelines=true");
+            var timelineCases = countryApiData.Location.Timelines.Confirmed.Timeline;
+            var timelineDeaths = countryApiData.Location.Timelines.Deaths.Timeline;
+
+            country.TimelineCases = timelineCases;
+            country.TimelineDeaths = timelineDeaths;
+        }
+
+        public async Task<DetailedCountryModel> GetCountryStats(int countryId)
         {
             await GetCountryById(countryId);
             var name = CountryOverview.Location.Country;
-            var deaths = CountryOverview.Location.Latest.Deaths;
-            var cases = CountryOverview.Location.Latest.Confirmed;
-            var pop = CountryOverview.Location.Country_Population;
-            return new Country(countryId, name, pop, cases, deaths);
+            var totaldeaths = CountryOverview.Location.Latest.Deaths;
+            var totalconfirmed = CountryOverview.Location.Latest.Confirmed;
+            var population = CountryOverview.Location.Country_Population;
+            var lastUpdated = CountryOverview.Location.Last_Updated;
+            var countryCode = CountryOverview.Location.Country_Code;
+            var latestCases = SetLatest(CountryOverview.Location.Timelines.Confirmed.Timeline.Values.ToList<int>());
+            var latestDeaths = SetLatest(CountryOverview.Location.Timelines.Deaths.Timeline.Values.ToList<int>());
+            return new DetailedCountryModel(countryId, name, countryCode, population, totalconfirmed, totaldeaths, lastUpdated, latestCases, latestDeaths);
         }
+
 
         public long WorldCases()
         {
@@ -75,6 +94,12 @@ namespace Coronavirus_Tracker.Models
         public long WorldDeaths()
         {
             return ApiModel.Latest.Deaths;
+        }
+
+        public int SetLatest(List<int> timelineValues)
+        {
+            var penultimate = timelineValues.Count - 2;
+            return timelineValues.Last() - timelineValues[penultimate];
         }
     }
 }

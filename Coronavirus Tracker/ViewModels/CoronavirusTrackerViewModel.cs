@@ -20,6 +20,32 @@ namespace Coronavirus_Tracker.ViewModels
 {
     class CoronavirusTrackerViewModel : ViewModel
     {
+        private ChartViewModel _chartview;
+
+        public ChartViewModel ChartView
+        {
+            get => _chartview;
+
+            set
+            {
+                _chartview = value;
+                OnPropertyChanged("ChartView");
+            }
+        }
+
+        private DetailedViewModel detailedViewModel;
+
+        public DetailedViewModel DetailedView
+        {
+            get => detailedViewModel;
+            set
+            {
+                detailedViewModel = value;
+                OnPropertyChanged("DetailedView");
+            }
+        }
+
+
         private IDatabaseModel DatabaseManager;
 
         private CoronavirusDataModel Data;
@@ -60,22 +86,22 @@ namespace Coronavirus_Tracker.ViewModels
                 }
         }
 
-        private ObservableCollection<Country> _trackedCountries;
+        private ObservableCollection<DetailedCountryModel> _trackedCountries;
 
-        public ObservableCollection<Country> TrackedCountries
+        public ObservableCollection<DetailedCountryModel> TrackedCountries
         {
             get => _trackedCountries;
 
             set
             {
                 _trackedCountries = value;
-                OnPropertyChanged("Tracked Countries");
+                OnPropertyChanged("TrackedCountries");
             }
         }
 
-        private Country _selectedCountry;
+        private DetailedCountryModel _selectedCountry;
 
-        public Country SelectedCountry
+        public DetailedCountryModel SelectedCountry
         {
             get => _selectedCountry;
             set
@@ -85,9 +111,9 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
-        private List<ComboboxCountryModel> _countryNames;
+        private List<CountryModel> _countryNames;
 
-        public List<ComboboxCountryModel> CountryNames
+        public List<CountryModel> CountryNames
         {
             get { return _countryNames; }
             set {
@@ -96,9 +122,9 @@ namespace Coronavirus_Tracker.ViewModels
                 }
         }
 
-        private ComboboxCountryModel _selectedCountryName;
+        private CountryModel _selectedCountryName;
 
-        public ComboboxCountryModel SelectedCountryName
+        public CountryModel SelectedCountryName
         {
             get => _selectedCountryName;
             set
@@ -107,6 +133,7 @@ namespace Coronavirus_Tracker.ViewModels
                 OnPropertyChanged("SelectedCountryName");
             }
         }
+
 
         private long _worldCases;
 
@@ -132,13 +159,27 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
+        private int _newTrackedIndex;
+
+        public int NewTrackedIndex
+        {
+            get => _newTrackedIndex;
+            set
+            {
+                _newTrackedIndex = value;
+                OnPropertyChanged("NewTrackedIndex");
+            }
+        }
+
 
         public CoronavirusTrackerViewModel()
         {
-            TrackedCountries = new ObservableCollection<Country>();
+            TrackedCountries = new ObservableCollection<DetailedCountryModel>();
             DatabaseManager = new DatabaseModel();
             Data = new CoronavirusDataModel();
             Enabled = false;
+            ChartView = new ChartViewModel(SelectedCountry);
+            DetailedView = new DetailedViewModel(SelectedCountry);
         }
 
         public async Task GetData()
@@ -153,8 +194,7 @@ namespace Coronavirus_Tracker.ViewModels
                 TrackedCountries.Add(country);
             }
             CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
-            CountryView.SortDescriptions.Add(new SortDescription("Cases", ListSortDirection.Descending));
-
+            NewTrackedIndex = 0;
             await GetData();
 
             if (Data.IsSuccessful)
@@ -167,6 +207,18 @@ namespace Coronavirus_Tracker.ViewModels
             {
                 MessageBox.Show("Could not pull data from API. Try again by clicking Refresh Button");
             }
+
+        }
+
+        public async Task SelectionChanged()
+        {
+
+            if (SelectedCountry != null && SelectedCountry.TimelineCases != null)
+                await Data.GetTimelines(SelectedCountry);
+
+            DetailedView = new DetailedViewModel(SelectedCountry);
+            ChartView = new ChartViewModel(SelectedCountry);
+
         }
 
         public void SetWorldStats()
@@ -177,15 +229,17 @@ namespace Coronavirus_Tracker.ViewModels
 
         public async void TrackCountry()
         {
-            var countryName = SelectedCountryName;
-
-            if (SelectedCountryName != null)
+            Enabled = false;
+            var country = SelectedCountryName;
+            if (country != null)
             {
-                var alreadyTracked = TrackedCountries.Where(c => c.Name.Equals(countryName));
+                var alreadyTracked = TrackedCountries.Where(c => c.Name.Equals(country.Name));
                 if (!alreadyTracked.Any())
                 {
-                    var stat = await Data.GetCountryStats(countryName.Id);
+                    var stat = await Data.GetCountryStats(country.Id);
+                    await Data.GetTimelines(stat);
                     TrackedCountries.Add(stat);
+                    NewTrackedIndex = (TrackedCountries.Count - 1);
                     await DatabaseManager.Create(stat);
                 }
             }
@@ -200,7 +254,7 @@ namespace Coronavirus_Tracker.ViewModels
                 TrackedCountries[i] = await Data.GetCountryStats(id);
                 await DatabaseManager.Update(TrackedCountries[i]);
             }
-            SetLastUpdated();
+            NewTrackedIndex = 0;
         }
         public void RemoveTrackedCountry()
         {
@@ -209,6 +263,7 @@ namespace Coronavirus_Tracker.ViewModels
             {
                 TrackedCountries.Remove(country);
                 DatabaseManager.Delete(country);
+                NewTrackedIndex = 0;
             }
         }
 
@@ -218,19 +273,6 @@ namespace Coronavirus_Tracker.ViewModels
             DatabaseManager.DeleteAll();
         }
 
-        public void SetLastUpdated()
-        {
-            if (Data != null)
-            {
-                LastUpdated = DateTime.Now.ToString();
-                Properties.Settings.Default.LastUpdated = DateTime.Now.ToString();
-                Properties.Settings.Default.Save();
-            }
-            else
-            {
-                LastUpdated = Properties.Settings.Default.LastUpdated;
-            }
-
-        }
+        
     }
 }
