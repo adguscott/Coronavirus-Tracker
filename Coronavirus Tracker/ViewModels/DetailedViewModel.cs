@@ -21,6 +21,7 @@ namespace Coronavirus_Tracker.ViewModels
             }
         }
 
+        public string Name { get; set; }
         public long Population { get; set; }
         public int LatestCases { get; set; }
         public int LatestDeaths { get; set; }
@@ -37,6 +38,7 @@ namespace Coronavirus_Tracker.ViewModels
             if (country != null)
             {
                 this.VisibleUC = true;
+                this.Name = country.Name;
                 this.Population = country.Population;
                 this.LatestCases = country.LatestCases;
                 this.LatestDeaths = country.LatestDeaths;
