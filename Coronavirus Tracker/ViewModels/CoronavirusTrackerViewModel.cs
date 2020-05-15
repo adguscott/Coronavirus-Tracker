@@ -191,6 +191,7 @@ namespace Coronavirus_Tracker.ViewModels
         {
             foreach(var country in await DatabaseManager.Read())
             {
+                await Data.GetTimelines(country);
                 TrackedCountries.Add(country);
             }
             CountryView = CollectionViewSource.GetDefaultView(TrackedCountries);
@@ -243,6 +244,7 @@ namespace Coronavirus_Tracker.ViewModels
                     await DatabaseManager.Create(stat);
                 }
             }
+            Enabled = true;
         }
 
         public async Task Refresh()

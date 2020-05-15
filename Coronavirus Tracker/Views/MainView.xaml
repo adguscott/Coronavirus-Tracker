@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Coronavirus_Tracker.Views"
         mc:Ignorable="d"
         ContentRendered="Window_ContentRendered"
-        Title="Coronavirus Tracker" Height="600" Width="800" WindowStartupLocation="CenterScreen" WindowState="Maximized">
+        Title="Coronavirus Tracker" Height="600" Width="1250" WindowStartupLocation="CenterScreen" WindowState="Maximized">
 
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="bool2visible"></BooleanToVisibilityConverter>
@@ -57,6 +57,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
                 <ListBox Name="lbStats" Padding="0" Margin="10" Grid.Row="0" Width="200" SelectionChanged="SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalAlignment="Left" ItemsSource="{Binding TrackedCountries}" SelectedValue="{Binding SelectedCountry}" SelectedIndex="{Binding NewTrackedIndex}">
                     <ListBox.ItemTemplate>
@@ -88,6 +89,7 @@
                 <Label Grid.Column="1">Track a country to see detailed information here.</Label>
                 <local:DetailedView Grid.Column="1" Visibility="{Binding VisibleUC, Converter={StaticResource bool2visible}}" DataContext="{Binding DetailedView}"/>
                 <Button Grid.Column="0" Grid.Row="2" Width="150" IsEnabled="{Binding Enabled}" Click="Refresh_Click">Refresh</Button>
+                <Button Grid.Column="0" Margin="0 5 0 0" Grid.Row="3" Width="150" IsEnabled="{Binding Enabled}" Click="UntrackAll_Click">Untrack All</Button>
                 <local:ChartView DataContext="{Binding ChartView}" Visibility="{Binding VisibleUC, Converter={StaticResource bool2visible}}" Grid.Row="0" Grid.Column="2"/>
             </Grid>
         </Grid>

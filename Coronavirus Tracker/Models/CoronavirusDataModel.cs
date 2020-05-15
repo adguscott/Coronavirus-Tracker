@@ -53,7 +53,6 @@ namespace Coronavirus_Tracker.Models
             {
                 result.Add(new CountryModel() { Id = country.Id, Name = country.Country });
             }
-            //result.Add(GetAustraliaName());
             result = result.OrderBy(c => c.Name).ToList();
 
             return result;
