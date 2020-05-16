@@ -255,6 +255,7 @@ namespace Coronavirus_Tracker.ViewModels
                 var id = TrackedCountries[i].Id;
                 TrackedCountries[i] = await Data.GetCountryStats(id);
                 await DatabaseManager.Update(TrackedCountries[i]);
+                await Data.GetTimelines(TrackedCountries[i]);
             }
             NewTrackedIndex = 0;
         }
